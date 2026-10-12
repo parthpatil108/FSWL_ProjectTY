@@ -1,4 +1,4 @@
-# AuraOS — Full-Stack Personal Productivity & Habit Operating System (MERN)
+# A Full-Stack Personal Productivity and Habit Tracking System (TYBtech FSWL Mini-Project)
 
 AuraOS is a modern, full-stack personal productivity and habit-tracking web application built using the **MERN stack (MongoDB, Express.js, React.js, Node.js)**. It functions as an integrated **habit tracker, to-do/task manager, productivity planner, Pomodoro focus timer, thought/notes organizer, and intelligent analytics dashboard**.
 
