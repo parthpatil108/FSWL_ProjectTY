@@ -33,7 +33,19 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 
-// Health check route
+// Normalize duplicated slashes in incoming requests (e.g. /api//auth/login -> /api/auth/login)
+app.use((req, res, next) => {
+  if (req.url.includes('//')) {
+    req.url = req.url.replace(/\/+/g, '/');
+  }
+  next();
+});
+
+// Root & Health check routes
+app.get(['/', '/api'], (req, res) => {
+  res.json({ status: 'healthy', message: 'Daymark API is running', health: '/api/health' });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date(), app: 'Daymark API' });
 });
