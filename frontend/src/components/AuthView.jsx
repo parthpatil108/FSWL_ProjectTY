@@ -49,7 +49,7 @@ export default function AuthView({ onAuthSuccess }) {
         onAuthSuccess(res.user);
       }
     } catch (err) {
-      setError('Could not connect to demo account. Please ensure the backend server is running.');
+      setError(`Could not connect to demo account: ${err.message || 'Please ensure the backend server is running.'}`);
     } finally {
       setLoading(false);
     }
