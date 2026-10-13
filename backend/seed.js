@@ -10,9 +10,11 @@ const Goal = require('./models/Goal');
 const Achievement = require('./models/Achievement');
 const { recalculateHabitStreak } = require('./services/gamificationService');
 
+const connectDB = require('./config/db');
+
 const seedData = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/productivity_os');
+    await connectDB();
     console.log('[Seed] Connected to MongoDB');
 
     // Clean existing demo user data
