@@ -352,6 +352,10 @@ a {
   gap: 12px;
 }
 
+.mobile-menu-btn {
+  display: none;
+}
+
 .top-title {
   font-size: 0.96rem;
   font-weight: 600;

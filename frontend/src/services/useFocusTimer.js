@@ -39,6 +39,11 @@ export function useFocusTimer(onAutoFinish) {
   });
 
   const intervalRef = useRef(null);
+  const autoFinishRef = useRef(onAutoFinish);
+
+  useEffect(() => {
+    autoFinishRef.current = onAutoFinish;
+  }, [onAutoFinish]);
 
   // Sync to localStorage
   useEffect(() => {
@@ -59,6 +64,7 @@ export function useFocusTimer(onAutoFinish) {
   useEffect(() => {
     if (timerState.isRunning && !timerState.isPaused) {
       intervalRef.current = setInterval(() => {
+        let reachedZero = false;
         setTimerState((prev) => {
           if (prev.sessionType === 'stopwatch') {
             return {
@@ -68,13 +74,13 @@ export function useFocusTimer(onAutoFinish) {
             };
           } else {
             if (prev.secondsRemaining <= 1) {
-              clearInterval(intervalRef.current);
-              if (onAutoFinish) onAutoFinish();
+              reachedZero = true;
               return {
                 ...prev,
                 secondsRemaining: 0,
                 isRunning: false,
                 isPaused: false,
+                accumulatedSeconds: prev.accumulatedSeconds + 1,
               };
             }
             return {
@@ -84,6 +90,13 @@ export function useFocusTimer(onAutoFinish) {
             };
           }
         });
+
+        if (reachedZero) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          if (autoFinishRef.current) {
+            autoFinishRef.current();
+          }
+        }
       }, 1000);
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -92,7 +105,7 @@ export function useFocusTimer(onAutoFinish) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [timerState.isRunning, timerState.isPaused, onAutoFinish]);
+  }, [timerState.isRunning, timerState.isPaused]);
 
   const startTimer = useCallback((options = {}) => {
     setTimerState((prev) => {
@@ -159,10 +172,17 @@ export function useFocusTimer(onAutoFinish) {
   }, []);
 
   const finishSession = useCallback(async (saveCallback) => {
-    const elapsedMinutes =
-      timerState.sessionType === 'stopwatch'
-        ? Math.max(1, Math.round(timerState.stopwatchSeconds / 60))
-        : Math.max(1, Math.round(timerState.accumulatedSeconds / 60) || timerState.targetMinutes);
+    let elapsedMinutes;
+    if (timerState.sessionType === 'stopwatch') {
+      elapsedMinutes = Math.max(1, Math.round(timerState.stopwatchSeconds / 60));
+    } else {
+      const finishedNaturally = timerState.secondsRemaining === 0;
+      if (finishedNaturally) {
+        elapsedMinutes = timerState.targetMinutes;
+      } else {
+        elapsedMinutes = Math.max(1, Math.round(timerState.accumulatedSeconds / 60));
+      }
+    }
 
     const payload = {
       sessionType: timerState.sessionType,

@@ -81,10 +81,10 @@ export default function AuthView({ onAuthSuccess }) {
             className="brand-logo-mark"
             style={{ width: '36px', height: '36px', margin: '0 auto 12px', fontSize: '1rem' }}
           >
-            A
+            D
           </div>
           <h1 style={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
-            AuraOS
+            Daymark
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginTop: '2px' }}>
             Personal Productivity & Habit Operating System

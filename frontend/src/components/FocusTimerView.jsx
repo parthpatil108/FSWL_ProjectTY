@@ -27,8 +27,6 @@ export default function FocusTimerView({
   updateDetails,
   onSaveSession,
 }) {
-  const [customMinutes, setCustomMinutes] = useState(30);
-
   const {
     isRunning,
     isPaused,

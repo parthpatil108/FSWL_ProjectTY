@@ -46,7 +46,6 @@ export default function TopNav({
           className="btn-icon mobile-menu-btn"
           onClick={onToggleMobileMenu}
           title="Toggle Navigation"
-          style={{ display: 'none' }}
         >
           <Menu size={18} />
         </button>

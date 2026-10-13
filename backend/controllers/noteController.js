@@ -1,4 +1,5 @@
 const Note = require('../models/Note');
+const { handleControllerError } = require('../utils/handleControllerError');
 
 // @route   GET /api/notes
 // @desc    Get user notes with search & filtering
@@ -29,7 +30,7 @@ exports.getNotes = async (req, res) => {
 
     return res.json({ success: true, count: notes.length, data: notes });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -55,7 +56,7 @@ exports.createNote = async (req, res) => {
 
     return res.status(201).json({ success: true, data: note });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -83,7 +84,7 @@ exports.updateNote = async (req, res) => {
 
     return res.json({ success: true, data: note });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -97,7 +98,7 @@ exports.deleteNote = async (req, res) => {
     }
     return res.json({ success: true, message: 'Note deleted successfully' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -115,6 +116,6 @@ exports.togglePinNote = async (req, res) => {
 
     return res.json({ success: true, data: note });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };

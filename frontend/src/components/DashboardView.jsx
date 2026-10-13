@@ -407,7 +407,7 @@ export default function DashboardView({
             <button
               className="btn btn-secondary"
               style={{ padding: '12px 10px', flexDirection: 'column', gap: '4px', textAlign: 'center' }}
-              onClick={onStartFocus}
+              onClick={() => onStartFocus && onStartFocus(25, 'pomodoro')}
             >
               <span style={{ fontSize: '0.96rem', fontWeight: 700, color: 'var(--accent)' }}>25 min</span>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>Pomodoro</span>
@@ -415,7 +415,7 @@ export default function DashboardView({
             <button
               className="btn btn-secondary"
               style={{ padding: '12px 10px', flexDirection: 'column', gap: '4px', textAlign: 'center' }}
-              onClick={onStartFocus}
+              onClick={() => onStartFocus && onStartFocus(50, 'countdown')}
             >
               <span style={{ fontSize: '0.96rem', fontWeight: 700, color: 'var(--accent)' }}>50 min</span>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>Deep Sprint</span>
@@ -423,7 +423,7 @@ export default function DashboardView({
             <button
               className="btn btn-secondary"
               style={{ padding: '12px 10px', flexDirection: 'column', gap: '4px', textAlign: 'center' }}
-              onClick={onStartFocus}
+              onClick={() => onStartFocus && onStartFocus(15, 'countdown')}
             >
               <span style={{ fontSize: '0.96rem', fontWeight: 700, color: 'var(--accent)' }}>15 min</span>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>Quick Focus</span>

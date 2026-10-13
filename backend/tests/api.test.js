@@ -45,7 +45,7 @@ after(async () => {
   await mongoose.disconnect();
 });
 
-describe('AuraOS Backend API & Quality Suite', () => {
+describe('Daymark Backend API & Quality Suite', () => {
   test('Health check endpoint responds with healthy status', async () => {
     const res = await fetch(`${baseUrl}/health`);
     assert.strictEqual(res.status, 200);
@@ -288,5 +288,97 @@ describe('AuraOS Backend API & Quality Suite', () => {
     assert.strictEqual(dashData.success, true);
     assert.ok(dashData.data.habits.total >= 1);
     assert.ok(dashData.data.focus.todayMinutes >= 25);
+  });
+
+  test('Registration validation: rejects short password and malformed email', async () => {
+    // Short password
+    const shortPassRes = await fetch(`${baseUrl}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Short Pass User',
+        email: `valid_${Date.now()}@test.com`,
+        password: '123',
+      }),
+    });
+    assert.strictEqual(shortPassRes.status, 400);
+
+    // Malformed email
+    const badEmailRes = await fetch(`${baseUrl}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Bad Email User',
+        email: 'not-an-email',
+        password: 'validpassword123',
+      }),
+    });
+    assert.strictEqual(badEmailRes.status, 400);
+  });
+
+  test('Invalid resource ID format returns 400 Bad Request', async () => {
+    const res = await fetch(`${baseUrl}/tasks/invalid-object-id-123`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({ title: 'Invalid ID Test' }),
+    });
+    assert.strictEqual(res.status, 400);
+    const data = await res.json();
+    assert.strictEqual(data.success, false);
+  });
+
+  test('Multi-tenant data isolation: User 2 cannot access or modify User 1 tasks or habits', async () => {
+    // 1. Create a task for User 1
+    const tRes = await fetch(`${baseUrl}/tasks`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({
+        title: 'User 1 Private Task',
+        priority: 'high',
+      }),
+    });
+    const tData = await tRes.json();
+    const user1TaskId = tData.data._id;
+
+    // 2. Register User 2
+    const u2Res = await fetch(`${baseUrl}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'User Two',
+        email: `user2_${Date.now()}@test.com`,
+        password: 'password123',
+      }),
+    });
+    const u2Data = await u2Res.json();
+    const user2Token = u2Data.token;
+    const user2Id = u2Data.user.id;
+
+    // 3. User 2 tries to update User 1 task -> must return 404
+    const updateAttempt = await fetch(`${baseUrl}/tasks/${user1TaskId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${user2Token}`,
+      },
+      body: JSON.stringify({ title: 'Hacked Title' }),
+    });
+    assert.strictEqual(updateAttempt.status, 404);
+
+    // 4. User 2 tries to delete User 1 task -> must return 404
+    const deleteAttempt = await fetch(`${baseUrl}/tasks/${user1TaskId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${user2Token}` },
+    });
+    assert.strictEqual(deleteAttempt.status, 404);
+
+    // Clean up user 2
+    await User.deleteOne({ _id: user2Id });
   });
 });

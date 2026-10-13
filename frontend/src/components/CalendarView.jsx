@@ -70,7 +70,7 @@ export default function CalendarView({
     const dateTasks = tasks.filter((t) => {
       if (t.scheduledDate === dateStr) return true;
       if (t.dueDate) {
-        const dueStr = t.dueDate.split('T')[0];
+        const dueStr = typeof t.dueDate === 'string' ? t.dueDate.split('T')[0] : new Date(t.dueDate).toISOString().split('T')[0];
         if (dueStr === dateStr) return true;
       }
       return false;
@@ -87,8 +87,9 @@ export default function CalendarView({
     });
 
     const dateFocus = focusSessions.filter((s) => {
-      if (!s.createdAt && !s.endTime) return false;
-      const sDateStr = (s.endTime || s.createdAt).split('T')[0];
+      const rawDate = s.endTime || s.createdAt;
+      if (!rawDate) return false;
+      const sDateStr = typeof rawDate === 'string' ? rawDate.split('T')[0] : new Date(rawDate).toISOString().split('T')[0];
       return sDateStr === dateStr;
     });
 

@@ -2,6 +2,7 @@ const Goal = require('../models/Goal');
 const Achievement = require('../models/Achievement');
 const User = require('../models/User');
 const { awardXp } = require('../services/gamificationService');
+const { handleControllerError } = require('../utils/handleControllerError');
 
 // @route   GET /api/goals
 // @desc    Get user goals
@@ -10,7 +11,7 @@ exports.getGoals = async (req, res) => {
     const goals = await Goal.find({ user: req.user.id }).sort({ createdAt: -1 });
     return res.json({ success: true, count: goals.length, data: goals });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -41,7 +42,7 @@ exports.createGoal = async (req, res) => {
 
     return res.status(201).json({ success: true, data: goal });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -68,7 +69,7 @@ exports.updateGoal = async (req, res) => {
 
     return res.json({ success: true, data: goal });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -82,7 +83,7 @@ exports.deleteGoal = async (req, res) => {
     }
     return res.json({ success: true, message: 'Goal deleted successfully' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -164,6 +165,6 @@ exports.getAchievements = async (req, res) => {
       totalCount: CATALOG.length,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };

@@ -84,8 +84,8 @@ export default function Sidebar({
       <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="brand-wrapper">
-            <div className="brand-logo-mark">A</div>
-            <span className="brand-title">AuraOS</span>
+            <div className="brand-logo-mark">D</div>
+            <span className="brand-title">Daymark</span>
           </div>
           {mobileOpen && (
             <button className="btn-icon-subtle" onClick={onCloseMobile}>

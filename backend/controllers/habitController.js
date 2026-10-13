@@ -1,6 +1,7 @@
 const Habit = require('../models/Habit');
 const HabitLog = require('../models/HabitLog');
 const { recalculateHabitStreak, recalculateUserStreak, awardXp, getLocalDateString } = require('../services/gamificationService');
+const { handleControllerError } = require('../utils/handleControllerError');
 
 const getTodayString = () => getLocalDateString(new Date());
 
@@ -53,7 +54,7 @@ exports.getHabits = async (req, res) => {
     return res.json({ success: true, count: result.length, data: result });
   } catch (error) {
     console.error('[Get Habits Error]:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -99,7 +100,7 @@ exports.createHabit = async (req, res) => {
 
     return res.status(201).json({ success: true, data: habit });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -136,7 +137,7 @@ exports.updateHabit = async (req, res) => {
 
     return res.json({ success: true, data: habit });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -153,7 +154,7 @@ exports.deleteHabit = async (req, res) => {
 
     return res.json({ success: true, message: 'Habit deleted successfully' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -214,7 +215,7 @@ exports.toggleHabitCompletion = async (req, res) => {
     });
   } catch (error) {
     console.error('[Toggle Habit Error]:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -236,6 +237,6 @@ exports.getHabitHistory = async (req, res) => {
 
     return res.json({ success: true, count: logs.length, data: logs });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };

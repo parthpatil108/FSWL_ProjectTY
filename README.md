@@ -1,6 +1,6 @@
-# AuraOS — Full-Stack Personal Productivity & Habit Operating System (MERN)
+# Daymark — Full-Stack Personal Productivity & Habit Operating System (MERN)
 
-AuraOS is a modern, full-stack personal productivity and habit-tracking web application built using the **MERN stack (MongoDB, Express.js, React.js, Node.js)**. It functions as an integrated **habit tracker, to-do/task manager, productivity planner, Pomodoro focus timer, thought/notes organizer, and intelligent analytics dashboard**.
+Daymark is a modern, full-stack personal productivity and habit-tracking web application built using the **MERN stack (MongoDB, Express.js, React.js, Node.js)**. It functions as an integrated **habit tracker, to-do/task manager, productivity planner, Pomodoro focus timer, thought/notes organizer, and intelligent analytics dashboard**.
 
 The application answers four core questions for the user:
 1. **What do I need to do?** (Task prioritization, due dates, subtasks, recurrence)
@@ -12,9 +12,10 @@ The application answers four core questions for the user:
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: React 19, Vite, Vanilla CSS Design System (Custom tokens, glassmorphism, Dark/Light modes), Lucide React Icons, Canvas Confetti.
-- **Backend**: Node.js 24, Express 4.x REST API, JWT Authentication, bcryptjs, express-validator, morgan.
-- **Database**: MongoDB 8.x + Mongoose with compound unique indexes (`{ user, habit, date }`) ensuring strict data isolation per user.
+- **Frontend**: React 19, Vite 8, Vanilla CSS Design System (Custom tokens, glassmorphism, Dark/Light modes), Lucide React Icons, Canvas Confetti.
+- **Backend**: Node.js, Express 4.x REST API, JWT Authentication, bcryptjs, express-validator, morgan.
+- **Database**: MongoDB + Mongoose with compound unique indexes (`{ user, habit, date }`) ensuring strict multi-tenant data isolation.
+- **Quality & Testing**: Built-in Node test runner (`node --test`), automated API verification, multi-tenant isolation assertions.
 
 ---
 
@@ -22,8 +23,8 @@ The application answers four core questions for the user:
 
 ### 1. User Authentication & Data Isolation
 - Registration, Login, Logout with JWT tokens stored in `localStorage` and sent via `Authorization: Bearer <token>`.
-- Passwords securely hashed with bcrypt.
-- Every MongoDB document (`Habit`, `HabitLog`, `Task`, `FocusSession`, `Note`, `Goal`, `Achievement`) is indexed by `user: ObjectId`.
+- Passwords securely hashed with bcrypt (minimum 6 characters enforced).
+- Every MongoDB document (`Habit`, `HabitLog`, `Task`, `FocusSession`, `Note`, `Goal`, `Achievement`) is indexed and filtered by `user: ObjectId`.
 - Instant 1-click **⚡ Explore with Demo Account** button for effortless evaluation.
 
 ### 2. Habit Management System
@@ -70,21 +71,25 @@ The application answers four core questions for the user:
 
 ### 1. Prerequisites
 - **Node.js** (v18+)
-- **MongoDB** running locally on port 27017 (e.g. `mongodb://127.0.0.1:27017/productivity_os`)
+- **MongoDB** running locally or a MongoDB Atlas URI (e.g. `mongodb://127.0.0.1:27017/daymark`)
 
-### 2. Backend Setup
+### 2. Root Monorepo Commands
+From the project root:
 ```bash
-cd backend
-npm install
-node seed.js    # Seeds demo account with rich historical logs and streaks
-npm run dev     # Runs Express API on http://localhost:5000
+npm run install:all   # Installs dependencies for root, backend, and frontend
+npm run seed          # Seeds demo account with rich historical logs and streaks
+npm test              # Runs backend automated test suite (12 tests)
+npm run build         # Builds frontend production bundle
 ```
 
-### 3. Frontend Setup
+### 3. Development Mode
+Run both services concurrently or individually:
 ```bash
-cd frontend
-npm install
-npm run dev     # Runs Vite React app on http://127.0.0.1:5173
+# Terminal 1 - Backend API (http://localhost:5000)
+npm run dev:backend
+
+# Terminal 2 - Frontend UI (http://localhost:5173)
+npm run dev:frontend
 ```
 
 ### 4. Demo Account Credentials
@@ -100,7 +105,8 @@ npm run dev     # Runs Vite React app on http://127.0.0.1:5173
 mini-project/
 ├── backend/
 │   ├── config/
-│   │   └── db.js                 # MongoDB connection
+│   │   ├── db.js                 # MongoDB connection
+│   │   └── jwt.js                # Centralized JWT secret validator
 │   ├── controllers/
 │   │   ├── authController.js     # Auth, register, login, profile
 │   │   ├── habitController.js    # Habits & historical completions
@@ -111,43 +117,26 @@ mini-project/
 │   │   └── goalAchievementController.js # Gamification & badges
 │   ├── middleware/
 │   │   └── auth.js               # JWT verification middleware
-│   ├── models/
-│   │   ├── User.js
-│   │   ├── Habit.js
-│   │   ├── HabitLog.js           # Historical completion logs
-│   │   ├── Task.js
-│   │   ├── FocusSession.js
-│   │   ├── Note.js
-│   │   ├── Goal.js
-│   │   └── Achievement.js
+│   ├── models/                   # Mongoose schemas (User, Habit, Task, etc.)
 │   ├── routes/                   # Express route definitions
 │   ├── services/
 │   │   └── gamificationService.js# Streak recalculations & badge unlocks
+│   ├── tests/
+│   │   └── api.test.js           # Automated test suite (12 test cases)
+│   ├── utils/
+│   │   └── handleControllerError.js # Uniform error handling (CastError, ValidationError)
 │   ├── seed.js                   # Realistic database seeder
-│   └── server.js                 # Express entry point
+│   └── server.js                 # Express entry point & static serving
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── Sidebar.jsx
-│   │   │   ├── TopNav.jsx
-│   │   │   ├── AuthView.jsx
-│   │   │   ├── DashboardView.jsx
-│   │   │   ├── HabitsView.jsx
-│   │   │   ├── TasksView.jsx
-│   │   │   ├── FocusTimerView.jsx
-│   │   │   ├── NotesView.jsx
-│   │   │   ├── CalendarView.jsx
-│   │   │   ├── AnalyticsView.jsx
-│   │   │   ├── AchievementsView.jsx
-│   │   │   ├── SettingsView.jsx
-│   │   │   ├── CreateHabitModal.jsx
-│   │   │   ├── CreateTaskModal.jsx
-│   │   │   └── CreateNoteModal.jsx
+│   │   ├── components/           # View components & modals
 │   │   ├── services/
-│   │   │   └── api.js            # API client with token management
+│   │   │   ├── api.js            # API client with token management & dynamic base URL
+│   │   │   └── useFocusTimer.js  # Resilient focus timer hook
 │   │   ├── App.jsx               # Main state & view routing
-│   │   ├── index.css             # Vanilla CSS design system & tokens
-│   │   └── main.jsx
+│   │   └── index.css             # Vanilla CSS design system & tokens
+│   ├── vite.config.js            # Vite configuration with API proxy
 │   └── package.json
+├── package.json                  # Root monorepo orchestration scripts
 └── README.md
 ```

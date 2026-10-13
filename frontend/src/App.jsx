@@ -348,6 +348,13 @@ export default function App() {
     }
   };
 
+  const handleStartFocus = (minutes, sessionType) => {
+    if (minutes) {
+      setTimerMode(sessionType || 'countdown', minutes);
+    }
+    setCurrentView('focus');
+  };
+
   if (!user) {
     return <AuthView onAuthSuccess={(userData) => setUser(userData)} />;
   }
@@ -362,7 +369,7 @@ export default function App() {
       case 'notes': return 'Notes & Thoughts';
       case 'analytics': return 'Analytics & Goals';
       case 'settings': return 'Settings';
-      default: return 'AuraOS';
+      default: return 'Daymark';
     }
   };
 
@@ -407,7 +414,7 @@ export default function App() {
             setEditingNote(null);
             setNoteModalOpen(true);
           }}
-          onStartFocus={() => setCurrentView('focus')}
+          onStartFocus={() => handleStartFocus()}
           onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
         />
 
@@ -427,7 +434,7 @@ export default function App() {
                 setEditingTask(null);
                 setTaskModalOpen(true);
               }}
-              onStartFocus={() => setCurrentView('focus')}
+              onStartFocus={handleStartFocus}
               onQuickCreateTask={handleQuickCreateTask}
             />
           )}

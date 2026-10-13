@@ -1,5 +1,6 @@
 const Task = require('../models/Task');
 const { awardXp, getLocalDateString } = require('../services/gamificationService');
+const { handleControllerError } = require('../utils/handleControllerError');
 
 const getTodayString = () => getLocalDateString(new Date());
 
@@ -57,7 +58,7 @@ exports.getTasks = async (req, res) => {
     return res.json({ success: true, count: tasks.length, data: tasks });
   } catch (error) {
     console.error('[Get Tasks Error]:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -102,7 +103,7 @@ exports.createTask = async (req, res) => {
 
     return res.status(201).json({ success: true, data: task });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -141,7 +142,7 @@ exports.updateTask = async (req, res) => {
 
     return res.json({ success: true, data: task });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -155,7 +156,7 @@ exports.deleteTask = async (req, res) => {
     }
     return res.json({ success: true, message: 'Task deleted successfully' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -184,7 +185,7 @@ exports.toggleTaskCompletion = async (req, res) => {
 
     return res.json({ success: true, data: task });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
 
@@ -216,6 +217,6 @@ exports.toggleSubtask = async (req, res) => {
 
     return res.json({ success: true, data: task });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return handleControllerError(res, error);
   }
 };
